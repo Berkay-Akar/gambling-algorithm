@@ -1,5 +1,5 @@
-import React from 'react';
-import { Coins } from 'lucide-react';
+import React from "react";
+import { Coins } from "lucide-react";
 
 const GameHeader = () => {
   return (
