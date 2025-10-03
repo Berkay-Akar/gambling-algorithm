@@ -1,10 +1,10 @@
-import { MULTIPLIERS } from '../constants/gameConstants';
+import { MULTIPLIERS } from "../constants/gameConstants";
 
-export const calculateWinAmount = (clusters) => {
+export const calculateWinAmount = (clusters, betAmount = 1) => {
   let totalWin = 0;
-  clusters.forEach(cluster => {
+  clusters.forEach((cluster) => {
     const multiplier = MULTIPLIERS[cluster.symbol];
-    const win = cluster.count * multiplier;
+    const win = cluster.count * multiplier * betAmount;
     totalWin += win;
   });
   return totalWin;
@@ -12,7 +12,7 @@ export const calculateWinAmount = (clusters) => {
 
 export const getWinningCells = (clusters) => {
   const winCells = new Set();
-  clusters.forEach(cluster => {
+  clusters.forEach((cluster) => {
     cluster.cells.forEach(([row, col]) => {
       winCells.add(`${row},${col}`);
     });

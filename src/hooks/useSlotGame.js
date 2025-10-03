@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
-import { INITIAL_BALANCE, ANIMATION_DELAYS } from '../constants/gameConstants';
-import { generateGrid } from '../utils/gridGenerator';
-import { findClusters } from '../utils/clusterFinder';
-import { removeClusterAndDrop } from '../utils/cascadeHandler';
-import { calculateWinAmount, getWinningCells } from '../utils/winCalculator';
+import { useState, useCallback } from "react";
+import { INITIAL_BALANCE, ANIMATION_DELAYS } from "../constants/gameConstants";
+import { generateGrid } from "../utils/gridGenerator";
+import { findClusters } from "../utils/clusterFinder";
+import { removeClusterAndDrop } from "../utils/cascadeHandler";
+import { calculateWinAmount, getWinningCells } from "../utils/winCalculator";
 
 export const useSlotGame = () => {
   const [balance, setBalance] = useState(INITIAL_BALANCE);
@@ -15,48 +15,58 @@ export const useSlotGame = () => {
   const [cascadeCount, setCascadeCount] = useState(0);
   const [fallingCells, setFallingCells] = useState(new Map());
 
-  const processCascades = useCallback(async (initialGrid, totalWin = 0, cascades = 0) => {
-    let currentGrid = initialGrid;
-    let currentTotalWin = totalWin;
-    let currentCascades = cascades;
+  const processCascades = useCallback(
+    async (initialGrid, betAmount, totalWin = 0, cascades = 0) => {
+      let currentGrid = initialGrid;
+      let currentTotalWin = totalWin;
+      let currentCascades = cascades;
 
-    while (true) {
-      const clusters = findClusters(currentGrid);
-      
-      if (clusters.length === 0) {
-        break;
+      while (true) {
+        const clusters = findClusters(currentGrid);
+
+        if (clusters.length === 0) {
+          break;
+        }
+
+        const cascadeWin = calculateWinAmount(clusters, betAmount);
+        const winCells = getWinningCells(clusters);
+
+        currentTotalWin += cascadeWin;
+        currentCascades++;
+
+        setWinningCells(winCells);
+        setLastWin(currentTotalWin);
+        setCascadeCount(currentCascades);
+        setBalance((prev) => prev + cascadeWin);
+
+        await new Promise((resolve) =>
+          setTimeout(resolve, ANIMATION_DELAYS.WIN_DISPLAY)
+        );
+
+        const { newGrid, falling } = removeClusterAndDrop(
+          currentGrid,
+          clusters
+        );
+        setGrid(newGrid);
+        setWinningCells(new Set());
+        setFallingCells(falling);
+
+        await new Promise((resolve) =>
+          setTimeout(resolve, ANIMATION_DELAYS.CASCADE_DROP)
+        );
+        setFallingCells(new Map());
+
+        currentGrid = newGrid;
       }
 
-      const cascadeWin = calculateWinAmount(clusters);
-      const winCells = getWinningCells(clusters);
-
-      currentTotalWin += cascadeWin;
-      currentCascades++;
-      
-      setWinningCells(winCells);
-      setLastWin(currentTotalWin);
-      setCascadeCount(currentCascades);
-      setBalance(prev => prev + cascadeWin);
-      
-      await new Promise(resolve => setTimeout(resolve, ANIMATION_DELAYS.WIN_DISPLAY));
-
-      const { newGrid, falling } = removeClusterAndDrop(currentGrid, clusters);
-      setGrid(newGrid);
-      setWinningCells(new Set());
-      setFallingCells(falling);
-      
-      await new Promise(resolve => setTimeout(resolve, ANIMATION_DELAYS.CASCADE_DROP));
-      setFallingCells(new Map());
-      
-      currentGrid = newGrid;
-    }
-
-    return { finalGrid: currentGrid, totalWin: currentTotalWin };
-  }, []);
+      return { finalGrid: currentGrid, totalWin: currentTotalWin };
+    },
+    []
+  );
 
   const playGame = useCallback(async () => {
     if (balance < selectedBet) {
-      alert('Yetersiz bakiye!');
+      alert("Yetersiz bakiye!");
       return;
     }
 
@@ -70,10 +80,12 @@ export const useSlotGame = () => {
     const newGrid = generateGrid();
     setGrid(newGrid);
 
-    await new Promise(resolve => setTimeout(resolve, ANIMATION_DELAYS.INITIAL_GRID));
+    await new Promise((resolve) =>
+      setTimeout(resolve, ANIMATION_DELAYS.INITIAL_GRID)
+    );
 
-    await processCascades(newGrid);
-    
+    await processCascades(newGrid, selectedBet);
+
     setIsPlaying(false);
   }, [balance, selectedBet, processCascades]);
 
@@ -97,6 +109,6 @@ export const useSlotGame = () => {
     cascadeCount,
     fallingCells,
     playGame,
-    resetBalance
+    resetBalance,
   };
 };
