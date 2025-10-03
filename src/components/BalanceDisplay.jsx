@@ -5,14 +5,16 @@ const BalanceDisplay = ({ balance, lastWin, cascadeCount }) => {
     <div className="flex justify-between items-center mb-6">
       <div>
         <p className="text-white/70 text-sm mb-1">Balance</p>
-        <p className="text-3xl font-bold text-white">${balance}</p>
+        <p className="text-3xl font-bold text-white">${balance.toFixed(2)}</p>
       </div>
       {lastWin > 0 && (
         <div className="text-right">
           <p className="text-green-300 text-sm mb-1">
             Total Win {cascadeCount > 0 && `(${cascadeCount}x Cascade)`}
           </p>
-          <p className="text-3xl font-bold text-green-400">+${lastWin}</p>
+          <p className="text-3xl font-bold text-green-400">
+            +${lastWin.toFixed(2)}
+          </p>
         </div>
       )}
     </div>

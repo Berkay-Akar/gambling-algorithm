@@ -17,7 +17,7 @@ const BetSelector = ({ selectedBet, setSelectedBet, isPlaying }) => {
                 : "bg-white/20 text-white hover:bg-white/30"
             } ${isPlaying ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            ${amount}
+            ${amount.toFixed(2)}
           </button>
         ))}
       </div>
