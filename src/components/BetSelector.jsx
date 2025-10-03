@@ -4,7 +4,7 @@ import { BET_AMOUNTS } from '../constants/gameConstants';
 const BetSelector = ({ selectedBet, setSelectedBet, isPlaying }) => {
   return (
     <div className="mb-4">
-      <p className="text-white/70 text-sm mb-2">Bahis Miktarı</p>
+      <p className="text-white/70 text-sm mb-2">Bet Amount</p>
       <div className="flex flex-wrap gap-2">
         {BET_AMOUNTS.map(amount => (
           <button
@@ -17,7 +17,7 @@ const BetSelector = ({ selectedBet, setSelectedBet, isPlaying }) => {
                 : 'bg-white/20 text-white hover:bg-white/30'
             } ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {amount} ₺
+            ${amount}
           </button>
         ))}
       </div>

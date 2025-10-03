@@ -5,7 +5,7 @@ const MultiplierTable = () => {
   return (
     <div className="mt-6 pt-6 border-t border-white/20">
       <p className="text-white/70 text-sm mb-3">
-        Katsayılar (4+ bitişik sembol gerekli)
+        Multipliers (4+ adjacent symbols required)
       </p>
       <div className="grid grid-cols-3 gap-3">
         {SYMBOLS.map(symbol => (

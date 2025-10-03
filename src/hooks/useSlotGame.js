@@ -66,7 +66,7 @@ export const useSlotGame = () => {
 
   const playGame = useCallback(async () => {
     if (balance < selectedBet) {
-      alert("Yetersiz bakiye!");
+      alert("Insufficient balance!");
       return;
     }
 
