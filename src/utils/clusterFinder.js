@@ -1,4 +1,8 @@
-import { GRID_SIZE, MIN_CLUSTER_SIZE } from '../constants/gameConstants';
+import {
+  GRID_ROWS,
+  GRID_COLS,
+  MIN_CLUSTER_SIZE,
+} from "../constants/gameConstants";
 
 export const findClusters = (grid) => {
   const visited = new Set();
@@ -6,10 +10,12 @@ export const findClusters = (grid) => {
 
   const dfs = (row, col, symbol, cluster) => {
     const key = `${row},${col}`;
-    
+
     if (
-      row < 0 || row >= GRID_SIZE ||
-      col < 0 || col >= GRID_SIZE ||
+      row < 0 ||
+      row >= GRID_ROWS ||
+      col < 0 ||
+      col >= GRID_COLS ||
       visited.has(key) ||
       grid[row][col] !== symbol
     ) {
@@ -25,18 +31,18 @@ export const findClusters = (grid) => {
     dfs(row, col + 1, symbol, cluster);
   };
 
-  for (let i = 0; i < GRID_SIZE; i++) {
-    for (let j = 0; j < GRID_SIZE; j++) {
+  for (let i = 0; i < GRID_ROWS; i++) {
+    for (let j = 0; j < GRID_COLS; j++) {
       const key = `${i},${j}`;
       if (!visited.has(key)) {
         const cluster = [];
         dfs(i, j, grid[i][j], cluster);
-        
+
         if (cluster.length >= MIN_CLUSTER_SIZE) {
           clusters.push({
             symbol: grid[i][j],
             cells: cluster,
-            count: cluster.length
+            count: cluster.length,
           });
         }
       }

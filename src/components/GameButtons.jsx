@@ -1,5 +1,6 @@
 import React from "react";
 import { Play, RotateCcw } from "lucide-react";
+import AutoPlay from "./AutoPlay";
 
 const GameButtons = ({
   playGame,
@@ -9,22 +10,27 @@ const GameButtons = ({
   selectedBet,
 }) => {
   return (
-    <div className="flex gap-3">
+    <div className="flex items-center gap-3">
       <button
         onClick={playGame}
         disabled={isPlaying || balance < selectedBet}
-        className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 text-lg disabled:cursor-not-allowed"
+        className="w-16 h-16 bg-gradient-to-b from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 rounded-full shadow-2xl transition-all flex items-center justify-center disabled:cursor-not-allowed border-4 border-white/30 hover:scale-105 active:scale-95"
+        title={isPlaying ? "Playing..." : "Play"}
       >
-        <Play className="w-6 h-6" />
-        {isPlaying ? "Playing..." : `Play ($${selectedBet.toFixed(2)})`}
+        <Play className="w-8 h-8 text-white fill-white" />
       </button>
+      <AutoPlay
+        isAutoPlaying={false}
+        toggleAutoPlay={() => {}}
+        isPlaying={isPlaying}
+      />
       {balance === 0 && (
         <button
           onClick={resetBalance}
-          className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+          className="w-12 h-12 bg-orange-600 hover:bg-orange-700 rounded-full shadow-lg transition-all flex items-center justify-center border-2 border-white/30"
+          title="Reset Balance"
         >
-          <RotateCcw className="w-5 h-5" />
-          Reset
+          <RotateCcw className="w-6 h-6 text-white" />
         </button>
       )}
     </div>

@@ -18,8 +18,12 @@ export const SYMBOL_COLORS = {
   "⭐": "bg-yellow-400",
 };
 
-export const GRID_SIZE = 6;
+export const GRID_ROWS = 5;
+export const GRID_COLS = 6;
 export const BET_AMOUNTS = [10, 20, 30, 40, 50, 75, 100, 150, 200];
+export const BET_INCREMENT = 10;
+export const MIN_BET = 10;
+export const MAX_BET = 200;
 export const INITIAL_BALANCE = 1000;
 export const MIN_CLUSTER_SIZE = 5;
 

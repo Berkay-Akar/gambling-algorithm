@@ -1,26 +1,40 @@
 import React from "react";
-import { BET_AMOUNTS } from "../constants/gameConstants";
+import { Minus, Plus } from "lucide-react";
+import { MIN_BET, MAX_BET, BET_INCREMENT } from "../constants/gameConstants";
 
 const BetSelector = ({ selectedBet, setSelectedBet, isPlaying }) => {
+  const decreaseBet = () => {
+    setSelectedBet((prev) => Math.max(MIN_BET, prev - BET_INCREMENT));
+  };
+
+  const increaseBet = () => {
+    setSelectedBet((prev) => Math.min(MAX_BET, prev + BET_INCREMENT));
+  };
+
   return (
-    <div className="mb-4">
-      <p className="text-white/70 text-sm mb-2">Bet Amount</p>
-      <div className="flex flex-wrap gap-2">
-        {BET_AMOUNTS.map((amount) => (
-          <button
-            key={amount}
-            onClick={() => setSelectedBet(amount)}
-            disabled={isPlaying}
-            className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-              selectedBet === amount
-                ? "bg-yellow-500 text-black"
-                : "bg-white/20 text-white hover:bg-white/30"
-            } ${isPlaying ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            ${amount.toFixed(2)}
-          </button>
-        ))}
+    <div className="flex items-center gap-2">
+      <button
+        onClick={decreaseBet}
+        disabled={isPlaying || selectedBet <= MIN_BET}
+        className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center text-white font-bold transition-all shadow-lg"
+      >
+        <Minus size={20} />
+      </button>
+
+      <div className="bg-green-600 px-6 py-2 rounded-lg shadow-lg">
+        <div className="text-white text-xs font-semibold">BET</div>
+        <div className="text-white text-xl font-bold">
+          ${selectedBet.toFixed(2)}
+        </div>
       </div>
+
+      <button
+        onClick={increaseBet}
+        disabled={isPlaying || selectedBet >= MAX_BET}
+        className="w-10 h-10 rounded-full bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center text-white font-bold transition-all shadow-lg"
+      >
+        <Plus size={20} />
+      </button>
     </div>
   );
 };
