@@ -14,6 +14,7 @@ export const useSlotGame = () => {
   const [winningCells, setWinningCells] = useState(new Set());
   const [cascadeCount, setCascadeCount] = useState(0);
   const [fallingCells, setFallingCells] = useState(new Map());
+  const [explodingCells, setExplodingCells] = useState(new Set());
 
   const processCascades = useCallback(
     async (initialGrid, betAmount, totalWin = 0, cascades = 0) => {
@@ -34,21 +35,31 @@ export const useSlotGame = () => {
         currentTotalWin += cascadeWin;
         currentCascades++;
 
+        // Phase 1: Show winning cells with pulse animation
         setWinningCells(winCells);
         setLastWin(currentTotalWin);
         setCascadeCount(currentCascades);
         setBalance((prev) => prev + cascadeWin);
 
         await new Promise((resolve) =>
-          setTimeout(resolve, ANIMATION_DELAYS.WIN_DISPLAY)
+          setTimeout(resolve, ANIMATION_DELAYS.WIN_PULSE)
         );
 
+        // Phase 2: Explosion animation
+        setExplodingCells(winCells);
+        setWinningCells(new Set());
+
+        await new Promise((resolve) =>
+          setTimeout(resolve, ANIMATION_DELAYS.EXPLOSION)
+        );
+
+        // Phase 3: Drop new symbols
         const { newGrid, falling } = removeClusterAndDrop(
           currentGrid,
           clusters
         );
         setGrid(newGrid);
-        setWinningCells(new Set());
+        setExplodingCells(new Set());
         setFallingCells(falling);
 
         await new Promise((resolve) =>
@@ -76,6 +87,7 @@ export const useSlotGame = () => {
     setWinningCells(new Set());
     setCascadeCount(0);
     setFallingCells(new Map());
+    setExplodingCells(new Set());
 
     const newGrid = generateGrid();
     setGrid(newGrid);
@@ -96,6 +108,7 @@ export const useSlotGame = () => {
     setWinningCells(new Set());
     setCascadeCount(0);
     setFallingCells(new Map());
+    setExplodingCells(new Set());
   }, []);
 
   return {
@@ -108,6 +121,7 @@ export const useSlotGame = () => {
     winningCells,
     cascadeCount,
     fallingCells,
+    explodingCells,
     playGame,
     resetBalance,
   };

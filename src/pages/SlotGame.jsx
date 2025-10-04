@@ -1,11 +1,11 @@
-import React from 'react';
-import { useSlotGame } from '../hooks/useSlotGame';
-import GameHeader from '../components/GameHeader';
-import BalanceDisplay from '../components/BalanceDisplay';
-import BetSelector from '../components/BetSelector';
-import GameButtons from '../components/GameButtons';
-import GameGrid from '../components/GameGrid';
-import MultiplierTable from '../components/MultiplierTable';
+import React from "react";
+import { useSlotGame } from "../hooks/useSlotGame";
+import GameHeader from "../components/GameHeader";
+import BalanceDisplay from "../components/BalanceDisplay";
+import BetSelector from "../components/BetSelector";
+import GameButtons from "../components/GameButtons";
+import GameGrid from "../components/GameGrid";
+import MultiplierTable from "../components/MultiplierTable";
 
 const SlotGame = () => {
   const {
@@ -18,8 +18,9 @@ const SlotGame = () => {
     winningCells,
     cascadeCount,
     fallingCells,
+    explodingCells,
     playGame,
-    resetBalance
+    resetBalance,
   } = useSlotGame();
 
   return (
@@ -28,19 +29,19 @@ const SlotGame = () => {
         <GameHeader />
 
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20">
-          <BalanceDisplay 
-            balance={balance} 
-            lastWin={lastWin} 
-            cascadeCount={cascadeCount} 
+          <BalanceDisplay
+            balance={balance}
+            lastWin={lastWin}
+            cascadeCount={cascadeCount}
           />
 
-          <BetSelector 
+          <BetSelector
             selectedBet={selectedBet}
             setSelectedBet={setSelectedBet}
             isPlaying={isPlaying}
           />
 
-          <GameButtons 
+          <GameButtons
             playGame={playGame}
             resetBalance={resetBalance}
             isPlaying={isPlaying}
@@ -51,12 +52,13 @@ const SlotGame = () => {
 
         {grid.length > 0 && (
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-            <GameGrid 
+            <GameGrid
               grid={grid}
               winningCells={winningCells}
               fallingCells={fallingCells}
+              explodingCells={explodingCells}
             />
-            
+
             <MultiplierTable />
           </div>
         )}
