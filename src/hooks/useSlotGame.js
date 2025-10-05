@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { INITIAL_BALANCE, ANIMATION_DELAYS } from "../constants/gameConstants";
 import { generateGrid } from "../utils/gridGenerator";
 import { findClusters } from "../utils/clusterFinder";
@@ -15,6 +15,8 @@ export const useSlotGame = () => {
   const [cascadeCount, setCascadeCount] = useState(0);
   const [fallingCells, setFallingCells] = useState(new Map());
   const [explodingCells, setExplodingCells] = useState(new Set());
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const [autoPlayCount, setAutoPlayCount] = useState(0);
 
   const processCascades = useCallback(
     async (initialGrid, betAmount, totalWin = 0, cascades = 0) => {
@@ -75,31 +77,93 @@ export const useSlotGame = () => {
     []
   );
 
+  const playOneSpin = useCallback(
+    async (currentBalance, betAmount) => {
+      if (currentBalance < betAmount) {
+        return { shouldStop: true, newBalance: currentBalance };
+      }
+
+      setIsPlaying(true);
+      const newBalance = currentBalance - betAmount;
+      setBalance(newBalance);
+      setLastWin(0);
+      setWinningCells(new Set());
+      setCascadeCount(0);
+      setFallingCells(new Map());
+      setExplodingCells(new Set());
+
+      const newGrid = generateGrid();
+      setGrid(newGrid);
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, ANIMATION_DELAYS.INITIAL_GRID)
+      );
+
+      await processCascades(newGrid, betAmount);
+
+      setIsPlaying(false);
+
+      return { shouldStop: false, newBalance };
+    },
+    [processCascades]
+  );
+
   const playGame = useCallback(async () => {
     if (balance < selectedBet) {
       alert("Insufficient balance!");
       return;
     }
 
-    setIsPlaying(true);
-    setBalance(balance - selectedBet);
-    setLastWin(0);
-    setWinningCells(new Set());
-    setCascadeCount(0);
-    setFallingCells(new Map());
-    setExplodingCells(new Set());
+    await playOneSpin(balance, selectedBet);
+  }, [balance, selectedBet, playOneSpin]);
 
-    const newGrid = generateGrid();
-    setGrid(newGrid);
+  const autoPlayRef = useRef({ shouldStop: false, remainingSpins: 0 });
 
-    await new Promise((resolve) =>
-      setTimeout(resolve, ANIMATION_DELAYS.INITIAL_GRID)
-    );
+  const startAutoPlay = useCallback((count) => {
+    setIsAutoPlaying(true);
+    setAutoPlayCount(count);
+    autoPlayRef.current = { shouldStop: false, remainingSpins: count };
+  }, []);
 
-    await processCascades(newGrid, selectedBet);
+  useEffect(() => {
+    const runAutoPlay = async () => {
+      if (
+        !isAutoPlaying ||
+        isPlaying ||
+        autoPlayRef.current.remainingSpins <= 0
+      ) {
+        return;
+      }
 
-    setIsPlaying(false);
-  }, [balance, selectedBet, processCascades]);
+      if (balance < selectedBet) {
+        alert("Insufficient balance! Auto play stopped.");
+        setIsAutoPlaying(false);
+        setAutoPlayCount(0);
+        autoPlayRef.current = { shouldStop: true, remainingSpins: 0 };
+        return;
+      }
+
+      await playOneSpin(balance, selectedBet);
+
+      autoPlayRef.current.remainingSpins--;
+      setAutoPlayCount(autoPlayRef.current.remainingSpins);
+
+      if (autoPlayRef.current.remainingSpins <= 0) {
+        setIsAutoPlaying(false);
+        setAutoPlayCount(0);
+      }
+    };
+
+    if (isAutoPlaying && !isPlaying) {
+      runAutoPlay();
+    }
+  }, [isAutoPlaying, isPlaying, balance, selectedBet, playOneSpin]);
+
+  const stopAutoPlay = useCallback(() => {
+    setIsAutoPlaying(false);
+    setAutoPlayCount(0);
+    autoPlayRef.current = { shouldStop: true, remainingSpins: 0 };
+  }, []);
 
   const resetBalance = useCallback(() => {
     setBalance(INITIAL_BALANCE);
@@ -109,6 +173,8 @@ export const useSlotGame = () => {
     setCascadeCount(0);
     setFallingCells(new Map());
     setExplodingCells(new Set());
+    setIsAutoPlaying(false);
+    setAutoPlayCount(0);
   }, []);
 
   return {
@@ -122,7 +188,11 @@ export const useSlotGame = () => {
     cascadeCount,
     fallingCells,
     explodingCells,
+    isAutoPlaying,
+    autoPlayCount,
     playGame,
     resetBalance,
+    startAutoPlay,
+    stopAutoPlay,
   };
 };

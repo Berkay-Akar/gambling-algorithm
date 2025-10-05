@@ -16,8 +16,12 @@ const SlotGame = () => {
     cascadeCount,
     fallingCells,
     explodingCells,
+    isAutoPlaying,
+    autoPlayCount,
     playGame,
     resetBalance,
+    startAutoPlay,
+    stopAutoPlay,
   } = useSlotGame();
 
   return (
@@ -50,6 +54,10 @@ const SlotGame = () => {
               isPlaying={isPlaying}
               balance={balance}
               selectedBet={selectedBet}
+              isAutoPlaying={isAutoPlaying}
+              autoPlayCount={autoPlayCount}
+              startAutoPlay={startAutoPlay}
+              stopAutoPlay={stopAutoPlay}
             />
           </div>
 

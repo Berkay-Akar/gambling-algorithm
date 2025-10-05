@@ -22,7 +22,3 @@ const BalanceDisplay = ({ balance, lastWin, cascadeCount }) => {
 };
 
 export default BalanceDisplay;
-
-//TODO: Add animations for balance changes
-//TODO: Add winning rate to not win easily
-//TODO: Add sound effects for wins and losses

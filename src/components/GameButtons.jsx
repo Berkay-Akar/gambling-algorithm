@@ -8,21 +8,27 @@ const GameButtons = ({
   isPlaying,
   balance,
   selectedBet,
+  isAutoPlaying,
+  autoPlayCount,
+  startAutoPlay,
+  stopAutoPlay,
 }) => {
   return (
     <div className="flex items-center gap-3">
       <button
         onClick={playGame}
-        disabled={isPlaying || balance < selectedBet}
+        disabled={isPlaying || balance < selectedBet || isAutoPlaying}
         className="w-16 h-16 bg-gradient-to-b from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 rounded-full shadow-2xl transition-all flex items-center justify-center disabled:cursor-not-allowed border-4 border-white/30 hover:scale-105 active:scale-95"
         title={isPlaying ? "Playing..." : "Play"}
       >
         <Play className="w-8 h-8 text-white fill-white" />
       </button>
       <AutoPlay
-        isAutoPlaying={false}
-        toggleAutoPlay={() => {}}
+        isAutoPlaying={isAutoPlaying}
+        startAutoPlay={startAutoPlay}
+        stopAutoPlay={stopAutoPlay}
         isPlaying={isPlaying}
+        autoPlayCount={autoPlayCount}
       />
       {balance === 0 && (
         <button
