@@ -46,6 +46,7 @@ export const useSlotGame = () => {
       let currentTotalWin = totalWin;
       let currentCascades = cascades;
 
+      // Process all cascades WITHOUT multipliers
       while (true) {
         const clusters = findClusters(currentGrid);
 
@@ -53,18 +54,7 @@ export const useSlotGame = () => {
           break;
         }
 
-        let cascadeWin = calculateWinAmount(clusters, betAmount);
-
-        // Collect and apply multipliers
-        const multipliers = collectMultipliers(currentGrid);
-        if (multipliers.length > 0 && cascadeWin > 0) {
-          const totalMultiplier = multipliers.reduce(
-            (sum, m) => sum + m.value,
-            0
-          );
-          cascadeWin *= totalMultiplier;
-        }
-
+        const cascadeWin = calculateWinAmount(clusters, betAmount);
         const winCells = getWinningCells(clusters);
 
         currentTotalWin += cascadeWin;
@@ -105,9 +95,29 @@ export const useSlotGame = () => {
         currentGrid = newGrid;
       }
 
+      // NOW apply multipliers AFTER all cascades are done
+      if (currentTotalWin > 0) {
+        const multipliers = collectMultipliers(currentGrid);
+        if (multipliers.length > 0) {
+          const totalMultiplier = multipliers.reduce(
+            (sum, m) => sum + m.value,
+            0
+          );
+          const multiplierBonus = currentTotalWin * (totalMultiplier - 1);
+
+          // Update the win and balance with multiplier bonus
+          currentTotalWin += multiplierBonus;
+          setLastWin(currentTotalWin);
+          setBalance((prev) => prev + multiplierBonus);
+
+          // Show a brief animation for multiplier application
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+      }
+
       return { finalGrid: currentGrid, totalWin: currentTotalWin };
     },
-    []
+    [collectMultipliers]
   );
 
   const playOneSpin = useCallback(
