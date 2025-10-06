@@ -1,4 +1,38 @@
-import { SYMBOLS, GRID_ROWS } from "../constants/gameConstants";
+import {
+  SYMBOLS,
+  GRID_ROWS,
+  MULTIPLIER_SYMBOLS,
+  MULTIPLIER_WEIGHTS,
+  MULTIPLIER_SPAWN_CHANCE,
+} from "../constants/gameConstants";
+
+// Weighted random selection for multipliers
+const getRandomMultiplier = () => {
+  const multiplierKeys = Object.keys(MULTIPLIER_SYMBOLS);
+  const totalWeight = Object.values(MULTIPLIER_WEIGHTS).reduce(
+    (sum, weight) => sum + weight,
+    0
+  );
+
+  let random = Math.random() * totalWeight;
+
+  for (const key of multiplierKeys) {
+    random -= MULTIPLIER_WEIGHTS[key];
+    if (random <= 0) {
+      return key;
+    }
+  }
+
+  return multiplierKeys[0];
+};
+
+// Generate a random symbol (regular or multiplier)
+const getRandomSymbol = () => {
+  if (Math.random() < MULTIPLIER_SPAWN_CHANCE) {
+    return getRandomMultiplier();
+  }
+  return SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+};
 
 export const removeClusterAndDrop = (grid, clusters) => {
   const newGrid = grid.map((row) => [...row]);
@@ -24,7 +58,7 @@ export const removeClusterAndDrop = (grid, clusters) => {
     const emptyCount = GRID_ROWS - column.length;
     const newSymbols = [];
     for (let i = 0; i < emptyCount; i++) {
-      newSymbols.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+      newSymbols.push(getRandomSymbol());
     }
 
     const allSymbols = [...newSymbols, ...column];

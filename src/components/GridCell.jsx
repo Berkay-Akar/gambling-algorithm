@@ -1,9 +1,23 @@
 import React from "react";
 
-import { SYMBOL_COLORS } from "../constants/gameConstants";
+import { SYMBOL_COLORS, MULTIPLIER_SYMBOLS } from "../constants/gameConstants";
 
 const GridCell = ({ symbol, isWinning, dropDistance, isExploding }) => {
+  // Check if this is a multiplier symbol
+  const isMultiplier = symbol in MULTIPLIER_SYMBOLS;
+
   const getBgClass = () => {
+    if (isMultiplier) {
+      // Multipliers get a golden gradient background
+      if (isExploding) {
+        return "bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-400";
+      }
+      if (isWinning) {
+        return "bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-400";
+      }
+      return "bg-gradient-to-br from-yellow-200 via-amber-300 to-orange-300";
+    }
+
     if (isExploding) {
       return `${SYMBOL_COLORS[symbol] || "bg-yellow-400"}`;
     }
@@ -28,7 +42,11 @@ const GridCell = ({ symbol, isWinning, dropDistance, isExploding }) => {
 
   return (
     <div
-      className={`aspect-square flex items-center justify-center text-4xl rounded-lg transition-all ${getBgClass()}`}
+      className={`aspect-square flex items-center justify-center rounded-lg transition-all ${getBgClass()} ${
+        isMultiplier
+          ? "font-black text-2xl text-white shadow-xl border-2 border-yellow-500"
+          : "text-4xl"
+      }`}
       style={{
         animation: getAnimation(),
         "--drop-distance": `${dropDistance * 100}%`,

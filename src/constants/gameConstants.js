@@ -18,6 +18,28 @@ export const SYMBOL_COLORS = {
   "⭐": "bg-yellow-400",
 };
 
+// Multiplier symbols with their values
+export const MULTIPLIER_SYMBOLS = {
+  "2x": 2,
+  "5x": 5,
+  "10x": 10,
+  "25x": 25,
+  "50x": 50,
+  "100x": 100,
+};
+
+export const MULTIPLIER_WEIGHTS = {
+  "2x": 40,
+  "5x": 30,
+  "10x": 15,
+  "25x": 8,
+  "50x": 5,
+  "100x": 2,
+};
+
+// Chance of getting a multiplier instead of regular symbol (2% chance)
+export const MULTIPLIER_SPAWN_CHANCE = 0.02;
+
 export const GRID_ROWS = 5;
 export const GRID_COLS = 6;
 export const BET_AMOUNTS = [10, 20, 30, 40, 50, 75, 100, 150, 200];

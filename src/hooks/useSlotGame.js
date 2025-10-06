@@ -1,5 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { INITIAL_BALANCE, ANIMATION_DELAYS } from "../constants/gameConstants";
+import {
+  INITIAL_BALANCE,
+  ANIMATION_DELAYS,
+  MULTIPLIER_SYMBOLS,
+} from "../constants/gameConstants";
 import { generateGrid } from "../utils/gridGenerator";
 import { findClusters } from "../utils/clusterFinder";
 import { removeClusterAndDrop } from "../utils/cascadeHandler";
@@ -18,6 +22,24 @@ export const useSlotGame = () => {
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [autoPlayCount, setAutoPlayCount] = useState(0);
 
+  // Function to collect all multipliers from the grid
+  const collectMultipliers = useCallback((grid) => {
+    const multipliers = [];
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[i].length; j++) {
+        const cell = grid[i][j];
+        if (cell in MULTIPLIER_SYMBOLS) {
+          multipliers.push({
+            value: MULTIPLIER_SYMBOLS[cell],
+            symbol: cell,
+            position: [i, j],
+          });
+        }
+      }
+    }
+    return multipliers;
+  }, []);
+
   const processCascades = useCallback(
     async (initialGrid, betAmount, totalWin = 0, cascades = 0) => {
       let currentGrid = initialGrid;
@@ -31,7 +53,18 @@ export const useSlotGame = () => {
           break;
         }
 
-        const cascadeWin = calculateWinAmount(clusters, betAmount);
+        let cascadeWin = calculateWinAmount(clusters, betAmount);
+
+        // Collect and apply multipliers
+        const multipliers = collectMultipliers(currentGrid);
+        if (multipliers.length > 0 && cascadeWin > 0) {
+          const totalMultiplier = multipliers.reduce(
+            (sum, m) => sum + m.value,
+            0
+          );
+          cascadeWin *= totalMultiplier;
+        }
+
         const winCells = getWinningCells(clusters);
 
         currentTotalWin += cascadeWin;
